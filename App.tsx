@@ -1,21 +1,41 @@
-import React, {FC} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {emailData} from './emailData'
-import { SwipeListView } from 'react-native-swipe-list-view';
+import React, {FC, useState} from 'react';
+import {StyleSheet, Text, View,TouchableOpacity} from 'react-native';
+import {emailInfo} from './emailData'
+import { SwipeListView,SwipeRow } from 'react-native-swipe-list-view';
 
 
 const App: FC = () => {
+
+  const [emailData,setEmailData] = useState(emailInfo)
+
+
+  const removeEmail=(rowKey:string)=>{
+    let index  = emailData.findIndex(item => item.key === rowKey)
+    let oldEmailInfo = [...emailData]
+    oldEmailInfo.splice(index,1)
+    setEmailData(oldEmailInfo)
+  }
+
   return (
     <View style={styles.container}>
      <SwipeListView
      data={emailData}
      renderItem={ (data, rowMap) => (
-      <View style={styles.item}>
+       
+      <TouchableOpacity 
+      
+      style={styles.item}>
           <View style={styles.divider}/>
           <Text style={styles.title}>{data.item.title}</Text>
           <Text>{data.item.body}</Text>
+      </TouchableOpacity>
+    )}
+    renderHiddenItem={ (data, rowMap) => (
+      <View style={styles.item}>
       </View>
     )}
+    disableRightSwipe={true}
+    swipeGestureEnded={(key,data)=>{removeEmail(key)}}
     />
      
     </View>
