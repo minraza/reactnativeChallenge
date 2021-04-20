@@ -8,6 +8,7 @@ const App: FC = () => {
 
   const [emailData,setEmailData] = useState(emailInfo)
 
+  const [openEmailKey,setOpenEmailKey] = useState("")
 
   const removeEmail=(rowKey:string)=>{
     let index  = emailData.findIndex(item => item.key === rowKey)
@@ -16,22 +17,36 @@ const App: FC = () => {
     setEmailData(oldEmailInfo)
   }
 
-  return (
-    <View style={styles.container}>
-     <SwipeListView
-     data={emailData}
-     renderItem={ (data, rowMap) => (
-       
+  const openClickedEmail=(key:string)=>{
+    if(openEmailKey!==key){
+      setOpenEmailKey(key)
+    }
+    else{
+      setOpenEmailKey("")
+    }
+  }
+
+  function visibleEmailClosed(data:any){
+    return(
       <TouchableOpacity 
-      
-      style={styles.item}>
+      onPress={()=>openClickedEmail(data.item.key)}
+      style={[openEmailKey!==data.item.key&&styles.closedItem,openEmailKey===data.item.key&&styles.openItem]}>
           <View style={styles.divider}/>
           <Text style={styles.title}>{data.item.title}</Text>
           <Text>{data.item.body}</Text>
       </TouchableOpacity>
+    )
+  }
+
+  return (
+    <View style={styles.container}>
+     <SwipeListView
+     data={emailData}
+     renderItem={ (data, rowMap) => ( 
+     visibleEmailClosed(data)
     )}
     renderHiddenItem={ (data, rowMap) => (
-      <View style={styles.item}>
+      <View style={styles.closedItem}>
       </View>
     )}
     disableRightSwipe={true}
@@ -53,8 +68,15 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flex: 1
   },
-  item: {
+  closedItem: {
     height: 80,
+    width: '100%',
+    paddingHorizontal: 16,
+    backgroundColor: '#f6f6f6',
+    
+  },
+  openItem: {
+    flex:1,
     width: '100%',
     paddingHorizontal: 16,
     backgroundColor: '#f6f6f6',
